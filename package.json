@@ -1,5 +1,5 @@
 {
-  "name": "cvs_loader",
+  "name": "csv_uploader",
   "version": "1.0.0",
   "description": "open source csv loader",
   "main": "index.js",
