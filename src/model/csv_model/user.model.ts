@@ -21,9 +21,9 @@ export const userSchema = z.object({
         .min(1, "age must be a valid number higher than 0"),
     role: z
         .enum(["user", "admin"], {
-            message: "role must be an string valid, wether user or admin",
+            message: "role must be an string valid, wether 'user' or 'admin'",
             invalid_type_error:
-                "role must be an string valid, wether user or admin",
+                "role must be an string valid, wether 'user' or 'admin'",
         })
         .default("user"),
 })
