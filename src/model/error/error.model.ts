@@ -37,6 +37,13 @@ class ApiErrorManager extends Error implements ErrInterface {
         this.code = code
         if (cause) this.cause = cause
     }
+    static generateMissingFileError(){
+        throw new this({
+                message:'not file was uploaded',
+                status:400,
+                code:ErrorCode.GENERAL_USER_ERROR
+            })
+    }
     static generateAuthenticationError = () => {
         const message = `Authentication error: You need to log in to access this resource.`
         throw new this({
@@ -73,6 +80,7 @@ class ApiErrorManager extends Error implements ErrInterface {
             message,
         })
     }
+    
     static generateModelIncompatibilityDataBaseError(cause:Error){
         const message = 'there is some validations errors the data base throws not including unique fields errors, please check compatibility between your ts model and your data base tables'
         throw new this({

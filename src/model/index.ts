@@ -5,13 +5,13 @@ export type CsvIssues = {
     }
 }
 // base model interface extends object, requires every csv model to be an object
-export interface B extends Object {}
+// interface B extends Object {}
 // type used to save row position from csv file while validations
-export interface Indexed extends B {row: number}
+//  interface Indexed extends B {row: number}
 // type used to references the returning values from postgreSQL insertions 
-export interface Succeed extends B {id:number}
+// interface Succeed extends B {id:number}
 // type used to carry Indexed types and at the same time the CsvIssues types from the rows that did not successfully validate their fields.
-export type Data<Indexed> = {
+export type Data<Indexed extends {row:number}> = {
     valids: Indexed[]
     errors: CsvIssues[]
 }
