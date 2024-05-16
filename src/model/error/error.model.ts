@@ -73,6 +73,15 @@ class ApiErrorManager extends Error implements ErrInterface {
             message,
         })
     }
+    static generateModelIncompatibilityDataBaseError(cause:Error){
+        const message = 'there is some validations errors the data base throws not including unique fields errors, please check compatibility between your ts model and your data base tables'
+        throw new this({
+            code: ErrorCode.EXTERNAL_SERVICE_ERROR,
+            status:500,
+            message,
+            cause
+        })
+    }
 }
 
 export default ApiErrorManager

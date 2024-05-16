@@ -4,12 +4,16 @@ export type CsvIssues = {
         [key: string]: string
     }
 }
-// type used to save row position from csv file while validations 
-export type Indexed<T> = T & {row:number}
-// type used to carry Indexed types and at the same time the CsvIssues types from the rows that did not successfully validate their fields. 
-export type Data<T> = {
-    valids:T[],
-    errors:CsvIssues[]
+// base model interface extends object, requires every csv model to be an object
+export interface B extends Object {}
+// type used to save row position from csv file while validations
+export interface Indexed extends B {row: number}
+// type used to references the returning values from postgreSQL insertions 
+export interface Succeed extends B {id:number}
+// type used to carry Indexed types and at the same time the CsvIssues types from the rows that did not successfully validate their fields.
+export type Data<Indexed> = {
+    valids: Indexed[]
+    errors: CsvIssues[]
 }
 // type used to send the final response with the Succeed type from insertions to db and the information about the ones that did not make it.
 export type Res<T> = {
@@ -47,5 +51,3 @@ export type Res<T> = {
 // 	}
 // }
 // ```
-
-
