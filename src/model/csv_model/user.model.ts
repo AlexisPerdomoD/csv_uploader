@@ -1,3 +1,4 @@
+import {QueryConfig} from "pg"
 import z from "zod"
 
 export const userSchema = z.object({
@@ -30,3 +31,10 @@ export const userSchema = z.object({
 
 export type UserInfo = z.infer<typeof userSchema>
 export type User = UserInfo & { id: number }
+export const getConfig = (ui:UserInfo):QueryConfig =>{
+    return {
+        text:`INSERT INTO users(name, email, age, role)
+            VALUES($1, $2, $3, $4) RETURNING *;`,
+        values:[ui.name, ui.email, ui.age, ui.role]
+    }
+}

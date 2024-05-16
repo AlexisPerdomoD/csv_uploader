@@ -26,7 +26,7 @@ export type Res<T> = {
 
 // ```json
 // {
-// 	"ok": true,
+// 	"ok": true, 
 // 	"data": {
 // 	  "success": [
 // 	    {
