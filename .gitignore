@@ -1,5 +1,5 @@
 node_modules
 .env
-/src/config/info
+/src/config/info/*
 /src/build
 package-lock.json

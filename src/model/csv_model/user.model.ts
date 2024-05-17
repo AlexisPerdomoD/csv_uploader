@@ -1,5 +1,6 @@
 import {QueryConfig} from "pg"
 import z from "zod"
+import {numberInStringMinAge} from "."
 
 export const userSchema = z.object({
     name: z
@@ -14,12 +15,7 @@ export const userSchema = z.object({
             required_error: "email must not be empty",
         })
         .email("email must have a valid email format"),
-    age: z
-        .number({
-            invalid_type_error: "age must be an integer type number",
-        })
-        .int("age must be an integer")
-        .min(1, "age must be a valid number higher than 0"),
+    age: numberInStringMinAge,
     role: z
         .enum(["user", "admin"], {
             message: "role must be an string valid, wether 'user' or 'admin'",
