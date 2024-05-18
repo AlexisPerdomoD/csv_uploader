@@ -1,9 +1,12 @@
 import express from "express"
-import logger from "./config/logger.config"
 import { errorMiddleware } from "./middleware/error.middleware"
 import cors from "cors"
 import dotenvConfig from "./config/dotenv.config"
 import { loggerMidleware } from "./middleware/logger.middleware"
+import cookieParser from "cookie-parser"
+import userRouter from "./route/user.route"
+import csvUserPostgresRouter from "./route/csv_uploaders/userCsvPostgreSql.route"
+
 const app = express()
 
 app.use(
@@ -13,10 +16,13 @@ app.use(
         origin: dotenvConfig.HOST,
     })
 )
+app.use(cookieParser(dotenvConfig.SECRET_COOKIE))
 
-logger.info(`starting Api at port ${dotenvConfig.PORT}`)
 
 app.use(loggerMidleware)
-app.use(errorMiddleware)
 
+app.use('/api/', csvUserPostgresRouter)
+app.use('/api/user/', userRouter)
+
+app.use(errorMiddleware)
 export default app

@@ -1,6 +1,7 @@
 import { PoolClient } from "pg"
 import pgConfig from "../config/pg.config"
 import PostgreSQLManager from "./postgreSQL"
+import UserManager from "./user"
 
 class DataAccessObject {
     private client: PoolClient | null = null
@@ -14,5 +15,10 @@ class DataAccessObject {
     }
     //postgreSQL manager
     pm = new PostgreSQLManager(this.getClient)
+    // others database managers 
+
+
+    //ApiUsersManager
+    um =  new UserManager(this.getClient)
 }
 export default new DataAccessObject()

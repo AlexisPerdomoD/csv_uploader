@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import { ErrInterface, ErrorCode } from "../model/error/error.model"
 import logger from "../config/logger.config"
 import { MulterError } from "multer"
+import { PostgresConstrainsErrCode, PostgresInternalErrorCode } from "../model/postgreSQL.model"
 export const errorMiddleware = (
     e: Error | ErrInterface,
     _req: Request,
@@ -31,7 +32,32 @@ export const errorMiddleware = (
             field: e.field,
         })
     }
-
+    //postgres errors for not csv related
+    if('detail' in e && 'code' in e){
+        if(e.code === PostgresConstrainsErrCode.UniqueViolation)
+            return res.status(400).json({
+                message:e.message,
+                detail: e.detail,
+                status:400,
+                error:e.name
+            })
+        if(Object.values(PostgresConstrainsErrCode).includes(
+            e.code as PostgresConstrainsErrCode))
+            return res.status(400).json({
+                message:e.message,
+                detail: e.detail,
+                status:400,
+                error:e.name
+            })
+            if(Object.values(PostgresInternalErrorCode).includes(
+                e.code as PostgresInternalErrorCode))
+                return res.status(500).json({
+                    message:e.message,
+                detail: e.detail,
+                status:500,
+                error:e.name
+                })
+            }
     logger.log(
         "fatal",
         `error status lost, process probably dead
