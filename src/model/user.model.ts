@@ -39,6 +39,10 @@ export const loginSchema = z.object({
         })
         .email("email must have a valid email format"),
     password:z.string().min(8, 'password must be at least 8 characters long').regex(regex, 'invalid credentials')
+},{
+    message:'this end point expected a object with email  and password with a valid format, please check your credentials',
+    invalid_type_error:'this end point expected a object email and password keys',
+    required_error:'this end point expected a object with email and password but got undefined on both or one of them'
 })
 export const tokenInfoSchema = z.object({
     email: z

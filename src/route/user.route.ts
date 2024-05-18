@@ -9,16 +9,13 @@ const userRouter = Router()
 
 userRouter.post('/login', async(req, res, next)=>{
     try {
-        const {email, password} = req.body
-        const loginInfo = loginSchema.safeParse({
-            email,
-            password
-        })
+        const loginInfo = loginSchema.safeParse(req.body)
         if(loginInfo.error) throw new ApiErrorManager({
-            message:loginInfo.error.errors[0].path[0] + loginInfo.error.errors[0].message,
+            message:loginInfo.error.errors[0].path.join(" ") +": "+ loginInfo.error.errors[0].message,
             code: ErrorCode.INVALID_TYPE_ERROR,
             status:400
         })
+        const {email, password} = loginInfo.data
         const user = await dao.um.getUser(email)
         const isAuthenticated = checkPass(password, user)
         if(!isAuthenticated) throw new ApiErrorManager({
@@ -33,12 +30,12 @@ userRouter.post('/login', async(req, res, next)=>{
              dotenvConfig.SECRET_TOKEN || '', 
              {expiresIn:"1h"}
         )
-        req.cookies("token", data, {
+        
+        res.cookie("token", data, {
             httpOnly:true,
             maxAge:1000 * 60 * 60,//1h,
             signed:true
         })
-        console.log(req.signedCookies)
         res.send({
             ok:true,
             message:'logged in'

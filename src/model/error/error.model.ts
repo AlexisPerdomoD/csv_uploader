@@ -37,7 +37,7 @@ class ApiErrorManager extends Error implements ErrInterface {
         this.code = code
         if (cause) this.cause = cause
     }
-    static generateMissingFileError(){
+    static generateMissingFileError = () =>{
         throw new this({
                 message:'not file was uploaded',
                 status:400,

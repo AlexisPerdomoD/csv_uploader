@@ -2,6 +2,7 @@ import app from "./app"
 import envConfig from "./config/dotenv.config"
 import logger from "./config/logger.config"
 import dao from "./dao"
+import { signPass } from "./utility/hasher.util"
 
 ["SIGING", "SIGTERM", "SIGQUIT"].forEach((signal) =>
     process.on(signal, async () => {
@@ -11,4 +12,4 @@ import dao from "./dao"
 )
 
 const PORT = envConfig.PORT
-app.listen(PORT, () => logger.info("App serving on Port ", PORT))
+app.listen(PORT, () => logger.info("App serving on Port " + PORT))

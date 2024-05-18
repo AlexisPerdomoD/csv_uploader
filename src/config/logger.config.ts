@@ -1,3 +1,4 @@
+import path from "path"
 import winston, {transports, format} from "winston"
 const custom ={
     levels:{
@@ -29,7 +30,7 @@ const logger = winston.createLogger({
         }),
         new transports.File({
         level:"warning",
-        filename:".src/config/info/errors.log",
+        filename:path.join(__dirname,"/src/config/info/errors.log"),
         format: format.simple()
     })
     ]

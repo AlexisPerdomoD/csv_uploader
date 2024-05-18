@@ -8,7 +8,7 @@ import userRouter from "./route/user.route"
 import csvUserPostgresRouter from "./route/csv_uploaders/userCsvPostgreSql.route"
 
 const app = express()
-
+app.use(express.json())
 app.use(
     cors({
         allowedHeaders: ["Content-Type"],

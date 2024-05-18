@@ -12,10 +12,8 @@ export const postgreSqlUsersUploaderController = async (
     next: NextFunction
 ) => {
     try {
-        if (!req.file) return ApiErrorManager.generateMissingFileError()
-        const pathToFile = path.isAbsolute(req.file.path)
-            ? path.join(__dirname, req.file.path)
-            : req.file.path
+        if (req.file === undefined) return next(ApiErrorManager.generateMissingFileError())
+        const pathToFile =  req.file.path
         const data: PostgreSQLData<UserInfo> = {
             config: getConfig,
             ...(await validateFile<UserInfo>(pathToFile, userSchema)),
