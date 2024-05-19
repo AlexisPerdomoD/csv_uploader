@@ -3,6 +3,7 @@ import { CsvIssues, Data } from "../model"
 import { createReadStream, unlinkSync } from "fs"
 import csv from "csv-parser"
 import ApiErrorManager, {ErrorCode} from "../model/error/error.model"
+
 export const validateFile = <T>(
     path: string,
     schema: Schema
@@ -17,7 +18,7 @@ export const validateFile = <T>(
         .on("data", (row) => {
             const validatedRow = schema.safeParse(row)
             if (validatedRow.success)
-                data.valids.push({ ...row, row: currentRow })
+                data.valids.push({ ...validatedRow.data, row: currentRow })
             else {
                 const error: CsvIssues = {
                     row: currentRow,
@@ -47,3 +48,29 @@ export const validateFile = <T>(
             })
         })
 })
+// uses for validate data comming in the body of the request when revalidating data
+export const validateBody = <T>(collection:any[], schema:Schema):Data<T & {row:number}>=>{
+    const data:Data<T & {row:number}> = {
+        valids:[],
+        errors:[]
+    }
+    for(let i = 0; i < collection.length; i++){
+        const doc = schema.safeParse(collection[i])
+        if(doc.success){
+            data.valids.push({...doc.data, row:i})
+        }else {
+                const error: CsvIssues = {
+                    row: i,
+                    details: {},
+                }
+                for (let issue of doc.error.errors) {
+                    error.details[`${issue.path[0]}`] = issue.message + (issue.path.length > 1 
+                        ? ` at key or position ${issue.path[1]}` : '')
+                }
+                data.errors.push(error)
+            }
+
+
+    }
+    return data
+}

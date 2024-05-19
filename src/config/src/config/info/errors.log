@@ -1,0 +1,2 @@
+fatal: Error trying to connect db : AggregateError
+fatal: undefined {"code":"ETIMEDOUT"}
