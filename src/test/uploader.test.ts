@@ -5,7 +5,7 @@ import { User, UserInfo, getConfig } from "../model/csv_model/user.model"
 import { Res } from "../model"
 
 describe("test PostgreSql uploader", () => {
-    const pm = DAO.pm
+    const pm = DAO.usersUploader
     const data: PostgreSQLData<UserInfo> = {
         valids: [
             {
