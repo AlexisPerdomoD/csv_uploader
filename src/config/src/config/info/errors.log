@@ -1,2 +1,10 @@
 fatal: Error trying to connect db : AggregateError
 fatal: undefined {"code":"ETIMEDOUT"}
+fatal: Error trying to connect db : Error: getaddrinfo EAI_AGAIN ep-bitter-pond-a5fnuzys.us-east-2.aws.neon.tech
+fatal: undefined {"code":"EAI_AGAIN","errno":-3001,"hostname":"ep-bitter-pond-a5fnuzys.us-east-2.aws.neon.tech","syscall":"getaddrinfo"}
+fatal: Error trying to connect db : Error: getaddrinfo EAI_AGAIN ep-bitter-pond-a5fnuzys.us-east-2.aws.neon.tech
+fatal: undefined {"code":"EAI_AGAIN","errno":-3001,"hostname":"ep-bitter-pond-a5fnuzys.us-east-2.aws.neon.tech","syscall":"getaddrinfo"}
+fatal: Error trying to connect db : Error: getaddrinfo EAI_AGAIN ep-bitter-pond-a5fnuzys.us-east-2.aws.neon.tech
+fatal: undefined {"code":"EAI_AGAIN","errno":-3001,"hostname":"ep-bitter-pond-a5fnuzys.us-east-2.aws.neon.tech","syscall":"getaddrinfo"}
+fatal: Error trying to connect db : Error: getaddrinfo EAI_AGAIN ep-bitter-pond-a5fnuzys.us-east-2.aws.neon.tech
+fatal: undefined {"code":"EAI_AGAIN","errno":-3001,"hostname":"ep-bitter-pond-a5fnuzys.us-east-2.aws.neon.tech","syscall":"getaddrinfo"}

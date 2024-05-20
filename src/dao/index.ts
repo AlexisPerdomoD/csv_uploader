@@ -1,11 +1,16 @@
 import { PoolClient } from "pg"
 import pgConfig from "../config/pg.config"
-import PostgreSQLManager from "./postgreSQL"
-import UserManager from "./user"
+import PostgresUploader from "./postgreSQL"
+import UserManager from  "./user"
+import { User, UserInfo } from "../model/csv_model/user.model"
+import { Uploader } from "./uploaders.model"
 
 class DataAccessObject {
+    //sql client for sql
     private client: PoolClient | null = null
+    // close data bases, 1 for now 
     close = () => pgConfig.close()
+    // method requires to do a query in postgreSQL managers and Uploaders (pg)
     private async getClient() {
         if (!this.client) {
             this.client = await pgConfig.getClient()
@@ -13,12 +18,11 @@ class DataAccessObject {
         }
         return this.client
     }
-    //postgreSQL manager
-    pm = new PostgreSQLManager(this.getClient)
-    // others database managers 
+    //postgreSQL Uploaders 
+    usersUploader:Uploader<UserInfo, User> = new PostgresUploader<UserInfo, User>(this.getClient)
+    // others database Uploaders and managers  
 
-
-    //ApiUsersManager
+    //ApiUsersManager used to controle sessions 
     um =  new UserManager(this.getClient)
 }
 export default new DataAccessObject()

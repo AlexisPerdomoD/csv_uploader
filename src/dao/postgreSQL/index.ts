@@ -1,29 +1,35 @@
-import { PoolClient, QueryResult } from "pg"
+import {PoolClient} from "pg"
  import { CsvIssues, Res } from "../../model"
 import {
     PostgreSQLData,
     PostgresConstrainsErrCode,
 } from "../../model/postgreSQL.model"
 import ApiErrorManager, { ErrorCode } from "../../model/error/error.model"
+import { Uploader } from "../uploaders.model"
 
-class PostgreSQLManager {
+class PostgreSQLManager
+    <
+        Base extends object, 
+        Succeed extends Base
+    > 
+    implements Uploader<Base, Succeed>
+{
     #gC: () => Promise<PoolClient>
+
     constructor(getClient: () => Promise<PoolClient>) {
         this.#gC = getClient
     }
-    async upload<B extends object>(
-        data: PostgreSQLData<B>
-    ): Promise<Res<B & { id: number }>> {
-        const success: (B & { id: number })[] = []
+
+    async upload(data: PostgreSQLData<Base>): Promise<Res<Succeed>> {
+        const success: Succeed[] = []
         const errors: CsvIssues[] = data.errors
         const client = await this.#gC()
         // insert elements checking for UNIQUE constains
         // any other kind of error will throw an error and send a fail response
         for (const r of data.valids) {
             try {
-                const insertedRow: QueryResult<B & { id: number }> =
-                    await client.query(data.config(r))
-                success.push(insertedRow.rows[0])
+                const insertedRow = await client.query(data.config(r))
+                success.push(insertedRow.rows[0] as Succeed)
             } catch (err) {
                 if (err instanceof Error) {
                     if ("code" in err) {

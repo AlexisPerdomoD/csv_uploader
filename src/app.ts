@@ -5,7 +5,7 @@ import dotenvConfig from "./config/dotenv.config"
 import { loggerMidleware } from "./middleware/logger.middleware"
 import cookieParser from "cookie-parser"
 import userRouter from "./route/user.route"
-import csvUserPostgresRouter from "./route/csv_uploaders/userCsvPostgreSql.route"
+import csvUserRouter from "./route/csv_uploaders/userCsv.route"
 
 const app = express()
 app.use(express.json())
@@ -21,7 +21,7 @@ app.use(cookieParser(dotenvConfig.SECRET_COOKIE))
 
 app.use(loggerMidleware)
 
-app.use('/api/', csvUserPostgresRouter)
+app.use('/api/', csvUserRouter)
 app.use('/api/user/', userRouter)
 
 app.use(errorMiddleware)

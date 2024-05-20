@@ -4,7 +4,7 @@ import ApiErrorManager, { ErrorCode } from "../model/error/error.model"
 import { UserInfo, getConfig, userSchema } from "../model/csv_model/user.model"
 import { validateFile , validateBody} from "../utility/validateFile.util"
 import factory from "../dao"
-const pm = factory.pm
+const userUploader = factory.usersUploader
 
 
  
@@ -33,7 +33,7 @@ export const postgresUsersUploaderFromFileCtr = async (
         config:getConfig,
         ...data
         }
-        return res.json(await pm.upload(parsedData))
+        return res.json(await userUploader.upload(parsedData))
     } catch (err) {
         next(err)
     }
@@ -59,8 +59,7 @@ export const postgresUserUploaderCtr = async(req:Request, res:Response, next:Nex
         config:getConfig,
         ...data
         }
-        return res.json(await pm.upload(parsedData))
-        
+        return res.json(await userUploader.upload(parsedData))
     }catch(err){
         next(err)
     }

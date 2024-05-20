@@ -3,7 +3,7 @@ import { QueryConfig } from "pg"
 import { Data} from "."
 
 // this Type also includes the QueryConfig for pg required for insert into the specific table from this type of db.
-export type PostgreSQLData<B> = Data<B & {row:number}> & {
+export interface PostgreSQLData<B> extends Data<B>{
     config: (data: B) => QueryConfig
 }
 
@@ -17,7 +17,7 @@ export enum PostgresConstrainsErrCode {
     Restric_Violation = '23001',
 }
 
-export enum PostgresInternalErrorCode {
+export enum PostgresInternalErrorCode { 
     InternalError = 'XX000',
     DataCorrupted = 'XX001',
     IndexCorrupted = 'XX002',
