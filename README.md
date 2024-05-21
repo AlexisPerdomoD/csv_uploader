@@ -193,6 +193,159 @@ src/model
 
  - error directory contains everything error models and types relate, by default includes the ApiCustomError which extends generic Error class and is used to handle an basic error diccionary along with ErrorCodes enums to be implement and uses in all part. if you need to include types or extends this class, the right directory to place them is error. More information is detailed into the error.model.ts.
 
-   
- - in process...
+## Endpoints
+
+### Log as an Admin
+
+```http
+POST /api/user/login
+```
+body required content: 
+```json
+{
+    "email":"testino@email.com",
+    "password":"Secr3d123"
+}
+```
+sucess response:
+```json
+{
+    "ok":true,
+    "message":"logged in"
+}
+```
+> after validate API user credentials, login information is storage in a sign cookie to the following request to protected endpoints. This credentials are valid by default 1 hour long. 
+
+### Upload a csv file to database 
+
+```http
+POST /api/upload/:model_endpoint 
+```
+
+This is a protected endpoint, the param model_endpoint references the name of the model implement in this route, to explore this point we are going to use 'users' model which represents a record of users' information (not the same collection use for API users used to validate admin users' credentials through UserManager). The endpoint is the following: 
+
+```http
+POST /api/upload/user
+```
+since we are using PostgreSQL for this, in the database provided to pg setup must exist a table where the rows from the csv file are going to be uploaded. We are being using: 
+
+```slq
+CREATE TABLE 
+    users(
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        age INTEGER ,
+        role VARCHAR(5) DEFAULT('user')
+    );
+
+CREATE INDEX idx_email ON users (email);
+```
+> is not required but recommended to place the table model used in your databases as references in the table directory. 
+### Uploader interface implementation
+
+In order to understand why model needs to be provided in a certain way and how can be implemented for anothers database managers different than postgres we need to check Uploader interface. This is a contract every implementation must follow in order to be inserted in DataAccessObject class:
+
+```javascript
+import { Data, Res } from "../model";
+
+export interface Uploader<
+        Base extends object, 
+        Succeed extends Base
+    >{
+    upload(parameters:Data<Base> & {[options:string]:any}):Promise<Res<Succeed>>
+}
+```
+`Uploader` is an interface which must be implement for every uploader class, those classes must recive as parameters a type Base (which must be an object an represents in our example UserInfo)
+and also a Succeed type (which as User type represents the returning value from database insertions, normally adding an id property, MongoDB also includes property _v version).
+
+> this interface can be expands to include others optional methods. 
+
+* `upload`: this is the principal methods where we need to take care of some considerations.
+`parameters` upload method recives a type which extends with an optional object options the generic type Data. This is define this way in order to add in every upload implementation another information, function etc required by the class implemented itself.
+Generic type Data<Base> is define as:
+```javascript
+export interface Data<Base>{
+    valids: (Base & {row:number})[]
+    errors: CsvIssues[]
+}
+```
+where valids references an array of an specific object type which is a valid type to go to the next step in DAO to try to be inserted, adding the property row which is a way to identify the specific row number in the csv file.
+Where CsvIssues is an object with the number of the row where was a problem and an object details where key specifies the field and the value the message of the issue.
+```javascript
+export type CsvIssues = {
+    row: number
+    details: {
+        [key: string]: string
+    }
+}
+```
+`return`: this methods return a promises with a generic type Res<Succeed>.
+```javascript
+export type Res<T> = {
+    ok: true
+    data: {
+        success: T[]
+        errors: CsvIssues[]
+    }
+}
+```
+
+> more details about generic models can be found in the index file of model directory.
+#### API model implementation
+
+With the database model defined, we must provide a model to be use inside the API to validate these fields in order to insert the data inside database. 
+As we said before, csv uploader uses zod in order to be specific about the conditions or constrains of every field and an specific message for the specific error.
+the model file inside the csv_model directory must look like this:
+
+```javascript
+
+import {QueryConfig} from "pg"
+import z from "zod"
+//since every field of csv rows are string (even numbers) we import a custom type which validates if the field age can be parse into a valid number. custom zod types can be found in index.ts in model directory.
+import {numberInStringMinAge} from "."
+//Schema used to validate type errors on csv collection after convertion to json files model[]
+export const userSchema = z.object({
+    name: z
+        .string({
+            required_error: "name must not be empty",
+            invalid_type_error: "name must be an string",
+        })
+        .min(1, "name must have at least one character"),
+    email: z
+        .string({
+            invalid_type_error: "email must be an string",
+            required_error: "email must not be empty",
+        })
+        .email("email must have a valid email format"),
+    age: numberInStringMinAge,
+    role: z
+        .enum(["user", "admin"], {
+            message: "role must be an string valid, wether 'user' or 'admin'",
+            invalid_type_error:
+                "role must be an string valid, wether 'user' or 'admin'",
+        })
+        .default("user"),
+})
+//type infer by schema extraction, references the rows model.
+export type UserInfo = z.infer<typeof userSchema>
+//type which references the type return by database after inserting data.
+//this case Postgres return every field plus an id type number.
+export type User = UserInfo & { id: number }
+
+
+//Postgres models require also a method getConfig which recives as parameter the Base model (UserInfo) and returns a QueryConfig type to be used by an pg client, the required fields are text which includes the query and values to point the order of model fields to be inserted.
+
+//this methods is required because of the PostgresData interface extends of Data generic type.
+//others extends Data types may require diferent methods or fields to be implemented.
+export const getConfig = (ui:UserInfo):QueryConfig =>{
+    return {
+         text:`INSERT INTO users(name, email, age, role)
+            VALUES($1, $2, $3, $4) RETURNING *;`,
+        values:[ui.name, ui.email, ui.age, ui.role]  
+    }
+}
+```
+
+- in process...
 
