@@ -10,7 +10,7 @@ class DataAccessObject {
     private client: PoolClient | null = null
     // close data bases, 1 for now 
     close = () => pgConfig.close()
-    // method requires to do a query in postgreSQL managers and Uploaders (pg)
+    // method required in order to do a query in postgreSQL managers and Uploaders (pg)
     private async getClient() {
         if (!this.client) {
             this.client = await pgConfig.getClient()
@@ -18,7 +18,8 @@ class DataAccessObject {
         }
         return this.client
     }
-    //postgreSQL Uploaders 
+    //postgreSQL Uploaders
+    //users Uploader class properly intanced with Base and Succeed type as UserInfo and User and with getClient method as argument
     usersUploader:Uploader<UserInfo, User> = new PostgresUploader<UserInfo, User>(this.getClient)
     // others database Uploaders and managers  
 

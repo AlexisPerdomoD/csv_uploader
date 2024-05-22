@@ -7,7 +7,7 @@ import {
 import ApiErrorManager, { ErrorCode } from "../../model/error/error.model"
 import { Uploader } from "../uploaders.model"
 
-class PostgreSQLManager
+class PostgresUploader
     <
         Base extends object, 
         Succeed extends Base
@@ -80,7 +80,7 @@ class PostgreSQLManager
     }
 }
 
-export default PostgreSQLManager
+export default PostgresUploader
 // duplicate key example error
 // {
 //   "name": "error",

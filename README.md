@@ -221,6 +221,7 @@ sucess response:
 ```http
 POST /api/upload/:model_endpoint 
 ```
+From here we are gonna explore along with the example how can be implemented this endpoint for diferent models exploring the core classes, interfaces and types to do so.
 
 This is a protected endpoint, the param model_endpoint references the name of the model implement in this route, to explore this point we are going to use 'users' model which represents a record of users' information (not the same collection use for API users used to validate admin users' credentials through UserManager). The endpoint is the following: 
 
@@ -346,6 +347,62 @@ export const getConfig = (ui:UserInfo):QueryConfig =>{
     }
 }
 ```
+#### Postgres Data interface 
+As we said, Uploader implementations work with extends of Data interface, allowing expands this object as required for specific implementations. This case Postgres models require to provide a QueryConfig(details in pg documentation), which is done by expanding Data interfice with a method that provide it.
+```javascript
+export interface PostgreSQLData<B> extends Data<B>{
+    config: (data: B) => QueryConfig
+}
+```
+the implementation for users as example looks like this: 
+```javascript
+const parsedData:PostgreSQLData<UserInfo> ={
+    config:getConfig,
+    valids:[],
+    errors:[]
+}
+```
+### Postgres database models Uploader implementation 
+So in order to upload our example we can use the generic implementation of Uploader, class PostgresUploader, which look like this:
+```javascript
+class PostgresUploader<Base extends object, Succeed extends Base> implements Uploader<Base, Succeed>{
+    //method to get client from Postgres and open a connection, passed as argument
+    #gC: () => Promise<PoolClient>
+
+    constructor(getClient: () => Promise<PoolClient>) {
+        this.#gC = getClient
+    }
+
+    async upload(data: PostgreSQLData<Base>): Promise<Res<Succeed>>
+```
+> more details about this implementation can be found in postgres directory into dao directory.
+
+all we need to do and be able to use our uploader is go to index file into dao directory and make sure to define or uploader. 
+```javascript
+class DataAccessObject {
+    //sql client for sql
+    private client: PoolClient | null = null
+    // close data bases, 1 for now 
+    close = () => pgConfig.close()
+    // method required in order to do a query in postgreSQL managers and Uploaders (pg)
+    private async getClient() {
+        if (!this.client) {
+            this.client = await pgConfig.getClient()
+            return this.client
+        }
+        return this.client
+    }
+    //postgreSQL Uploaders
+    //users Uploader class properly intanced with Base and Succeed type as UserInfo and User and with getClient method as argument
+    usersUploader:Uploader<UserInfo, User> = new PostgresUploader<UserInfo, User>(this.getClient)
+    // others database Uploaders and managers  
+
+    //ApiUsersManager used to controle sessions 
+    um =  new UserManager(this.getClient)
+}
+export default new DataAccessObject()
+```
+> this class can be expanded, can add news Uploaders for postgres or others database models with their respectives client methods and also closing methods similar way as pg in this case. 
 
 - in process...
 
