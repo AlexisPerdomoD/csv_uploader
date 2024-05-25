@@ -1,0 +1,11 @@
+name,email,age,role
+,invalidemail.com,notanumber,invalidrole
+NoName,,thirty-five,guest
+InvalidName,invalidemail@,45,unknown
+,,forty-five,superadmin
+12345,emailwithoutat.com,50,moderator
+Invalid Name,email@domain,thirty,role
+,"",not-a-number,anotherrole
+No Email,noreply@@domain.com,,testrole
+SpecialCharsName,!@#$$%^&,99,admin
+EmptyRole,validemail@example.com,notanumber,
